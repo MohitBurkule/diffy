@@ -2,39 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* DiffChecker Design System - Professional diff tool aesthetic */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core theme colors */
+    --background: 248 250 252;
+    --foreground: 203 23% 30%;
 
+    /* Card and surface colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 203 23% 30%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 203 23% 30%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand colors - Professional blue-green palette */
+    --primary: 197 71% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 197 71% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 203 23% 30%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 197 71% 95%;
+    --accent-foreground: 197 71% 35%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Diff-specific colors */
+    --diff-added: 142 52% 96%;
+    --diff-added-highlight: 142 52% 85%;
+    --diff-added-border: 142 52% 65%;
+    --diff-added-text: 142 70% 25%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --diff-removed: 0 93% 96%;
+    --diff-removed-highlight: 0 93% 85%;
+    --diff-removed-border: 0 93% 65%;
+    --diff-removed-text: 0 70% 35%;
+
+    --diff-modified: 48 100% 96%;
+    --diff-modified-highlight: 48 100% 85%;
+    --diff-modified-border: 48 100% 65%;
+    --diff-modified-text: 45 70% 35%;
+
+    /* Status and semantic colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 45 93% 58%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Interface elements */
+    --border: 214 32% 91%;
+    --input: 0 0% 100%;
+    --input-border: 214 32% 91%;
+    --ring: 197 71% 52%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-diff: linear-gradient(90deg, hsl(var(--diff-added) / 0.1), hsl(var(--diff-removed) / 0.1));
+    
+    /* Shadows */
+    --shadow-soft: 0 1px 3px 0 hsl(var(--foreground) / 0.1), 0 1px 2px 0 hsl(var(--foreground) / 0.06);
+    --shadow-medium: 0 4px 6px -1px hsl(var(--foreground) / 0.1), 0 2px 4px -1px hsl(var(--foreground) / 0.06);
+    --shadow-large: 0 10px 15px -3px hsl(var(--foreground) / 0.1), 0 4px 6px -2px hsl(var(--foreground) / 0.05);
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
