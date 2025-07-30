@@ -15,6 +15,10 @@ interface TextDiffTabProps {
   onError: (error: string) => void;
   isProcessing: boolean;
   setIsProcessing: (processing: boolean) => void;
+  onContentChange?: (left: string, right: string, settings?: any) => void;
+  initialLeftContent?: string;
+  initialRightContent?: string;
+  initialSettings?: any;
 }
 
 type DiffGranularity = 'lines' | 'words' | 'chars';
@@ -24,15 +28,37 @@ export const TextDiffTab: React.FC<TextDiffTabProps> = ({
   onDiffComplete,
   onError,
   isProcessing,
-  setIsProcessing
+  setIsProcessing,
+  onContentChange,
+  initialLeftContent = '',
+  initialRightContent = '',
+  initialSettings = {}
 }) => {
-  const [leftText, setLeftText] = useState('');
-  const [rightText, setRightText] = useState('');
-  const [diffGranularity, setDiffGranularity] = useState<DiffGranularity>('lines');
-  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
-  const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
-  const [ignoreCase, setIgnoreCase] = useState(false);
+  const [leftText, setLeftText] = useState(initialLeftContent);
+  const [rightText, setRightText] = useState(initialRightContent);
+  const [diffGranularity, setDiffGranularity] = useState<DiffGranularity>(initialSettings.diffGranularity || 'lines');
+  const [viewMode, setViewMode] = useState<ViewMode>(initialSettings.viewMode || 'side-by-side');
+  const [ignoreWhitespace, setIgnoreWhitespace] = useState(initialSettings.ignoreWhitespace || false);
+  const [ignoreCase, setIgnoreCase] = useState(initialSettings.ignoreCase || false);
   const { toast } = useToast();
+
+  // Update content when initial values change
+  React.useEffect(() => {
+    setLeftText(initialLeftContent);
+    setRightText(initialRightContent);
+  }, [initialLeftContent, initialRightContent]);
+
+  // Notify parent of content changes
+  React.useEffect(() => {
+    if (onContentChange) {
+      onContentChange(leftText, rightText, {
+        diffGranularity,
+        viewMode,
+        ignoreWhitespace,
+        ignoreCase
+      });
+    }
+  }, [leftText, rightText, diffGranularity, viewMode, ignoreWhitespace, ignoreCase, onContentChange]);
 
   const performDiff = useCallback(() => {
     if (!leftText.trim() && !rightText.trim()) {
