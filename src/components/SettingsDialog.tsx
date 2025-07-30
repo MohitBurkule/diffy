@@ -13,7 +13,6 @@ import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Palette, 
   Zap, 
   FileText, 
   Globe, 
@@ -23,7 +22,6 @@ import {
   Upload,
   Keyboard
 } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -101,19 +99,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Theme Settings */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Palette className="h-4 w-4" />
-              <Label className="text-sm font-medium">Appearance</Label>
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="theme-toggle">Theme</Label>
-              <ThemeToggle />
-            </div>
-          </div>
-
-          <Separator />
 
           {/* Comparison Settings */}
           <div className="space-y-3">
