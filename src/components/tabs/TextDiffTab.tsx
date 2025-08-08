@@ -9,14 +9,7 @@ import { Copy, Download, Upload, Zap, Search, ChevronDown, ChevronUp } from 'luc
 import { diffLines, diffWords, diffChars } from 'diff';
 import { DiffResult } from '../DiffChecker';
 import { useToast } from '@/hooks/use-toast';
-import Prism from 'prismjs';
-import 'prismjs/themes/prism-tomorrow.css';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-markup';
-import 'prismjs/components/prism-css';
+import Prism from '@/lib/prism';
 import { exportElementToPDF } from '@/utils/export';
 
 interface TextDiffTabProps {
