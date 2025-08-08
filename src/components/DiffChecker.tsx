@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Image, Folder, FileSpreadsheet, FileX, Settings, Share2, Link } from 'lucide-react';
+import { FileText, Image, Folder, FileSpreadsheet, FileX, Settings, Share2 } from 'lucide-react';
 import { TextDiffTab } from './tabs/TextDiffTab';
 import { ImageDiffTab } from './tabs/ImageDiffTab';
 import { FileDiffTab } from './tabs/FileDiffTab';

@@ -1,14 +1,23 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Copy, Download, Upload, Zap } from 'lucide-react';
+import { Copy, Download, Upload, Zap, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { diffLines, diffWords, diffChars } from 'diff';
 import { DiffResult } from '../DiffChecker';
 import { useToast } from '@/hooks/use-toast';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-css';
+import { exportElementToPDF } from '@/utils/export';
 
 interface TextDiffTabProps {
   onDiffComplete: (result: DiffResult) => void;
@@ -42,6 +51,42 @@ export const TextDiffTab: React.FC<TextDiffTabProps> = ({
   const [ignoreCase, setIgnoreCase] = useState(initialSettings.ignoreCase || false);
   const { toast } = useToast();
 
+  const [showLineNumbers, setShowLineNumbers] = useState<boolean>(initialSettings.showLineNumbers || true);
+  const [language, setLanguage] = useState<string>(initialSettings.language || 'javascript');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [currentMatch, setCurrentMatch] = useState<number>(-1);
+  const [matches, setMatches] = useState<HTMLElement[]>([]);
+  const diffContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Search utilities
+  const navigateMatch = useCallback((direction: number) => {
+    if (matches.length === 0) return;
+    const next = (currentMatch + direction + matches.length) % matches.length;
+    setCurrentMatch(next);
+  }, [currentMatch, matches.length]);
+
+  useEffect(() => {
+    // Recompute matches when search term or diff changes
+    if (!diffContainerRef.current || !searchTerm.trim()) {
+      setMatches([]);
+      setCurrentMatch(-1);
+      return;
+    }
+    const nodes = Array.from(diffContainerRef.current.querySelectorAll('div')) as HTMLElement[];
+    const term = searchTerm.toLowerCase();
+    const found = nodes.filter((el) => el.innerText.toLowerCase().includes(term));
+    setMatches(found);
+    setCurrentMatch(found.length > 0 ? 0 : -1);
+  }, [searchTerm, diffResult, viewMode]);
+
+  useEffect(() => {
+    // Highlight current match and scroll into view
+    if (matches.length === 0 || currentMatch < 0) return;
+    matches.forEach((el) => el.classList.remove('ring-2', 'ring-primary'));
+    const el = matches[currentMatch];
+    el.classList.add('ring-2', 'ring-primary');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [currentMatch, matches]);
   // Update content when initial values change
   React.useEffect(() => {
     setLeftText(initialLeftContent);
@@ -289,6 +334,50 @@ export const TextDiffTab: React.FC<TextDiffTabProps> = ({
             onCheckedChange={setIgnoreCase} 
           />
           <Label htmlFor="ignore-case">Ignore Case</Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Label htmlFor="language">Language:</Label>
+          <select
+            id="language"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="px-3 py-1 rounded border bg-background"
+          >
+            <option value="plaintext">Plain Text</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="python">Python</option>
+            <option value="json">JSON</option>
+            <option value="markup">HTML/XML</option>
+            <option value="css">CSS</option>
+          </select>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Switch id="line-numbers" checked={!!showLineNumbers} onCheckedChange={setShowLineNumbers} />
+          <Label htmlFor="line-numbers">Line numbers</Label>
+        </div>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search in diff"
+              className="pl-8 pr-20 py-1 rounded border bg-background"
+            />
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+              <button type="button" title="Prev" className="px-1 py-0.5 rounded border bg-background" onClick={() => navigateMatch(-1)}>
+                <ChevronUp className="h-4 w-4" />
+              </button>
+              <button type="button" title="Next" className="px-1 py-0.5 rounded border bg-background" onClick={() => navigateMatch(1)}>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+          <span className="text-xs text-muted-foreground">{matches.length > 0 ? `${currentMatch + 1}/${matches.length}` : '0/0'}</span>
         </div>
       </div>
 

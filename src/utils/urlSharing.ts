@@ -13,44 +13,31 @@ export interface SharedDiffData {
   timestamp: number;
 }
 
-// Compress data using simple base64 encoding
+// Compress/decompress using LZ-String for higher density and URL safety
+import LZString from 'lz-string';
+
 function compressData(data: string): string {
   try {
-    return btoa(encodeURIComponent(data));
+    return LZString.compressToEncodedURIComponent(data);
   } catch (e) {
     return data;
   }
 }
 
-// Decompress data
 function decompressData(data: string): string {
   try {
-    return decodeURIComponent(atob(data));
+    return LZString.decompressFromEncodedURIComponent(data) ?? data;
   } catch (e) {
     return data;
   }
 }
 
-// Generate shareable URL
+// Generate shareable URL (always embeds compressed data in the hash)
 export function generateShareableURL(data: SharedDiffData): string {
   const baseUrl = window.location.origin + window.location.pathname;
-  
-  // For smaller data (< 1000 chars), use URL hash
   const jsonData = JSON.stringify(data);
-  if (jsonData.length < 1000) {
-    const compressed = compressData(jsonData);
-    return `${baseUrl}#share=${compressed}`;
-  }
-  
-  // For larger data, store in localStorage and use a reference
-  const shareId = 'diff_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem(shareId, jsonData);
-  
-  // Also store in sessionStorage for cross-tab sharing
-  const sessionKey = 'share_' + shareId;
-  sessionStorage.setItem(sessionKey, jsonData);
-  
-  return `${baseUrl}#ref=${shareId}`;
+  const compressed = compressData(jsonData);
+  return `${baseUrl}#share=${compressed}`;
 }
 
 // Parse shared URL and retrieve data
@@ -67,25 +54,7 @@ export function parseSharedURL(): SharedDiffData | null {
       return null;
     }
   }
-  
-  if (hash.startsWith('ref=')) {
-    try {
-      const shareId = hash.substring(4);
-      let jsonData = localStorage.getItem(shareId);
-      
-      // Fallback to sessionStorage
-      if (!jsonData) {
-        jsonData = sessionStorage.getItem('share_' + shareId);
-      }
-      
-      if (jsonData) {
-        return JSON.parse(jsonData) as SharedDiffData;
-      }
-    } catch (e) {
-      console.error('Failed to retrieve shared data:', e);
-    }
-  }
-  
+  // Not a share link
   return null;
 }
 
