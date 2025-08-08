@@ -14,11 +14,11 @@ export interface SharedDiffData {
 }
 
 // Compress/decompress using LZ-String for higher density and URL safety
-import LZString from 'lz-string';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 
 function compressData(data: string): string {
   try {
-    return LZString.compressToEncodedURIComponent(data);
+    return compressToEncodedURIComponent(data);
   } catch (e) {
     return data;
   }
@@ -26,7 +26,7 @@ function compressData(data: string): string {
 
 function decompressData(data: string): string {
   try {
-    return LZString.decompressFromEncodedURIComponent(data) ?? data;
+    return decompressFromEncodedURIComponent(data) ?? data;
   } catch (e) {
     return data;
   }

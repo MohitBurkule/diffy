@@ -77,7 +77,7 @@ export const TextDiffTab: React.FC<TextDiffTabProps> = ({
     const found = nodes.filter((el) => el.innerText.toLowerCase().includes(term));
     setMatches(found);
     setCurrentMatch(found.length > 0 ? 0 : -1);
-  }, [searchTerm, diffResult, viewMode]);
+  }, [searchTerm, viewMode, leftText, rightText, ignoreWhitespace, ignoreCase, diffGranularity]);
 
   useEffect(() => {
     // Highlight current match and scroll into view
